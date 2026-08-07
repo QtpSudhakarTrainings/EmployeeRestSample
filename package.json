@@ -1,0 +1,21 @@
+{
+  "name": "QtpSudhakar-VibeTestQ-EmployeeRestSample",
+  "version": "1.0.0",
+  "description": "This is sample Employee Rest API",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app"
+  },
+  "keywords": [],
+  "author": "EmployeeRestSample",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-fileupload": "^1.5.0",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

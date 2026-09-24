@@ -2,6 +2,8 @@ const express = require('express')
 const path = require('path')
 const logger = require('./middleware/logger')
 const fileUpload = require('express-fileupload')
+const swaggerUi = require('swagger-ui-express')
+const YAML = require('yamljs')
 
 const basicAuth = require('./middleware/auth/basicAuth')
 const apiKeyAuth = require('./middleware/auth/apiKeyAuth')
@@ -33,6 +35,16 @@ app.use(express.urlencoded({ extended: true }))
 // app.use(express.text())
 app.use(fileUpload())
 
+// API Documentation
+const swaggerDocument = YAML.load(path.join(__dirname, 'docs', 'openapi.yaml'))
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+    explorer: true,
+    customSiteTitle: 'Employee REST API Docs'
+}))
+app.get('/api-docs.json', (req, res) => {
+    res.json(swaggerDocument)
+})
+
 // Public routes that ISSUE credentials - mounted before the auth middleware
 // below, otherwise you could never obtain a token in the first place.
 // - POST /api/auth/login -> used by the Bearer Token (JWT) strategy
@@ -45,8 +57,8 @@ app.use(require('./routes/auth'))
 // and /api/upload. See docs/api-testing-with-playwright.md for how to test
 // each one with Playwright.
 // ============================================================================
-app.use(basicAuth)                 // Basic Auth         -> admin / admin
-// app.use(apiKeyAuth)              // API Key            -> header 'x-api-key: demo-api-key-12345'
+// app.use(basicAuth)                 // Basic Auth         -> admin / admin
+app.use(apiKeyAuth)              // API Key            -> header 'x-api-key: demo-api-key-12345'
 // app.use(bearerAuth)              // Bearer Token (JWT) -> POST /api/auth/login first
 // app.use(oauth2Auth)              // OAuth2 Client Creds-> POST /oauth/token first
 // app.use(digestAuth)              // Digest Auth        -> admin / admin, challenge/response

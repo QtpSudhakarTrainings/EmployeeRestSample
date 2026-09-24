@@ -1,0 +1,375 @@
+openapi: 3.0.3
+info:
+  title: Employee REST API
+  version: 1.0.0
+  description: >-
+    Demo API for employee CRUD operations, authentication token issuance,
+    and file upload. Intended for manual testing and API automation.
+servers:
+  - url: http://localhost:5002
+    description: Local development server
+security:
+  - basicAuth: []
+  - apiKeyAuth: []
+  - bearerAuth: []
+  - oauth2Auth: []
+paths:
+  /api/auth/login:
+    post:
+      summary: Issue JWT Bearer token
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  example: admin
+      responses:
+        '200':
+          description: Token issued successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token_type:
+                    type: string
+                    example: Bearer
+                  access_token:
+                    type: string
+                  expires_in:
+                    type: string
+                    example: 1h
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /oauth/token:
+    post:
+      summary: Issue OAuth2 client credentials token
+      operationId: getOAuthToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - grant_type
+                - client_id
+                - client_secret
+              properties:
+                grant_type:
+                  type: string
+                  example: client_credentials
+                client_id:
+                  type: string
+                  example: demo-client
+                client_secret:
+                  type: string
+                  example: demo-secret
+      responses:
+        '200':
+          description: Access token issued successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token_type:
+                    type: string
+                    example: Bearer
+                  access_token:
+                    type: string
+                  expires_in:
+                    type: integer
+                    example: 3600
+        '400':
+          description: Unsupported grant type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Invalid client credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/members:
+    get:
+      summary: List all members
+      operationId: getMembers
+      parameters:
+        - in: query
+          name: gender
+          required: false
+          schema:
+            type: string
+            enum: [male, female]
+      responses:
+        '200':
+          description: Member list returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Member'
+        '404':
+          description: No member matched gender filter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create member
+      operationId: createMember
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMemberRequest'
+      responses:
+        '201':
+          description: Member created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/members/{id}:
+    get:
+      summary: Get member by id
+      operationId: getMemberById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Member retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Member'
+        '404':
+          description: Member not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update member by id
+      operationId: updateMember
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMemberRequest'
+      responses:
+        '200':
+          description: Member updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMemberResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Member not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete member by id
+      operationId: deleteMember
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Member deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteMemberResponse'
+        '404':
+          description: Member not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/upload:
+    post:
+      summary: Upload image file
+      operationId: uploadFile
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+        '400':
+          description: Invalid file type or size
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+    bearerAuth:
+      type: http
+      scheme: bearer
+    oauth2Auth:
+      type: http
+      scheme: bearer
+  schemas:
+    Member:
+      type: object
+      required:
+        - id
+        - name
+        - gender
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: John Smith
+        gender:
+          type: string
+          example: Male
+    CreateMemberRequest:
+      type: object
+      required:
+        - name
+        - gender
+      properties:
+        name:
+          type: string
+          minLength: 4
+          maxLength: 25
+          example: John Doe
+        gender:
+          type: string
+          enum: [male, female]
+          example: male
+    UpdateMemberRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 4
+          maxLength: 25
+        gender:
+          type: string
+          enum: [male, female]
+    UpdateMemberResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+        member:
+          $ref: '#/components/schemas/Member'
+    DeleteMemberResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+    FileUploadResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: File uploaded successfully!
+        url:
+          type: string
+          example: http://localhost:5002/fileuploads/sample.png
+    ErrorResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: Member with id 999 doesn't exist
+        error:
+          type: string
+          example: unauthorized
+        message:
+          type: string
+          example: Invalid username or password

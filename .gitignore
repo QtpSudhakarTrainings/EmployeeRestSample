@@ -2,4 +2,6 @@ node_modules/
 dist/
 EmployeeRestSample.zip
 fileuploads/
+playwright-report/
+test-results/
 .env

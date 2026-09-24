@@ -10,7 +10,12 @@ This is a Demo API built using express and nodejs. It stores data into a JSON Fi
     * DELETE (/ID) - You can DELETE an existing member into PFMembers.json file.
 2. ### File Upload - http://localhost:5002/api/upload
     * POST (/) - You can POST a new FILE into fileuploads folder.
-3. ### INSTALLATION STEPS
+3. ### Swagger / API Documentation
+    * Open http://localhost:5002/api-docs for the interactive Swagger UI
+    * Open http://localhost:5002/api-docs.json for the raw OpenAPI JSON
+4. ### Playwright API Test Guide
+    * See [docs/playwright-api-guide.md](docs/playwright-api-guide.md) for a complete API testing guide and sample request-based specs.
+5. ### INSTALLATION STEPS
       * Install node.js
       * Install VS Code as IDE
       * Install nodemon globally by opening terminal and running the following command : -

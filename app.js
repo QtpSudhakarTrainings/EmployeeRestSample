@@ -57,8 +57,8 @@ app.use(require('./routes/auth'))
 // and /api/upload. See docs/api-testing-with-playwright.md for how to test
 // each one with Playwright.
 // ============================================================================
-// app.use(basicAuth)                 // Basic Auth         -> admin / admin
-app.use(apiKeyAuth)              // API Key            -> header 'x-api-key: demo-api-key-12345'
+app.use(basicAuth)                 // Basic Auth         -> admin / admin
+// app.use(apiKeyAuth)              // API Key            -> header 'x-api-key: demo-api-key-12345'
 // app.use(bearerAuth)              // Bearer Token (JWT) -> POST /api/auth/login first
 // app.use(oauth2Auth)              // OAuth2 Client Creds-> POST /oauth/token first
 // app.use(digestAuth)              // Digest Auth        -> admin / admin, challenge/response

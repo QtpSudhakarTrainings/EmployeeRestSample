@@ -14,7 +14,14 @@ This is a Demo API built using express and nodejs. It stores data into a JSON Fi
     * Open http://localhost:5002/api-docs for the interactive Swagger UI
     * Open http://localhost:5002/api-docs.json for the raw OpenAPI JSON
 4. ### Manually Verifying the REST API
-    The easiest way to verify the API is working is to test the authentication endpoint using any HTTP client:
+    The easiest way to verify the API is working is to test the authentication endpoint using any HTTP client.
+    
+    **Prerequisites:**
+    - Ensure **Basic Auth** is enabled in `app.js` by uncommenting the line:
+      ```javascript
+      app.use(basicAuth)                 // Basic Auth -> admin / admin
+      ```
+    - If another authentication strategy is active, comment it out and restart the server with `npm start`
     
     **Using cURL (Command Line):**
     ```bash

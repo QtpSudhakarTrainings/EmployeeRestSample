@@ -13,7 +13,55 @@ This is a Demo API built using express and nodejs. It stores data into a JSON Fi
 3. ### Swagger / API Documentation
     * Open http://localhost:5002/api-docs for the interactive Swagger UI
     * Open http://localhost:5002/api-docs.json for the raw OpenAPI JSON
-4. ### Playwright API Test Guide
+4. ### Manually Verifying the REST API
+    The easiest way to verify the API is working is to test the authentication endpoint using any HTTP client:
+    
+    **Using cURL (Command Line):**
+    ```bash
+    # Basic Authentication
+    curl -u admin:admin http://localhost:5002/api/auth/login
+    
+    # Or using Authorization header with Base64
+    curl -H "Authorization: Basic YWRtaW46YWRtaW4=" http://localhost:5002/api/auth/login
+    ```
+    
+    **Using Postman, Insomnia, or VS Code REST Client:**
+    1. Open your HTTP client and create a new request
+    2. Set the method to **GET**
+    3. Set the URL to **http://localhost:5002/api/auth/login**
+    4. Go to the **Authorization** tab and select **Basic Auth**
+    5. Enter `username = admin` and `password = admin`
+    6. Click **Send**
+    
+    **Expected Response:**
+    ```json
+    {
+      "message": "Authentication successful",
+      "user": {
+        "username": "admin",
+        "timestamp": "2026-11-03T07:30:00.000Z"
+      }
+    }
+    ```
+    
+    **Verifying Other Endpoints with Authentication:**
+    
+    To test other endpoints (e.g., `/api/members`), use the same Basic Auth credentials:
+    ```bash
+    # List all members
+    curl -u admin:admin http://localhost:5002/api/members
+    
+    # Get a specific member
+    curl -u admin:admin http://localhost:5002/api/members/1
+    ```
+    
+    If authentication fails, you'll receive a **401 Unauthorized** response. Make sure:
+    - The API is running (`npm start`)
+    - The server is on port 5002 (check `app.js` for custom ports)
+    - Your credentials match the configured auth strategy (default is `admin:admin`)
+    - The correct auth header is being sent
+
+5. ### Playwright API Test Guide
     * See [docs/playwright-api-guide.md](docs/playwright-api-guide.md) for a complete API testing guide and sample request-based specs.
 5. ### INSTALLATION STEPS
       * Install node.js
@@ -25,9 +73,9 @@ This is a Demo API built using express and nodejs. It stores data into a JSON Fi
          - **npm install**
       * To start the project type the following command in the integrated terminal of VS Code: -
          - **npm start** (or **npm run dev** for auto-restart on file changes via nodemon)
-4. By default this project runs on PORT 5002; to change it kindly open app.js file and update the following line of code: -
+6. By default this project runs on PORT 5002; to change it kindly open app.js file and update the following line of code: -
     - **const PORT = process.env.PORT || 5002**
-5. This project ships with **five interchangeable authentication strategies** for practicing different auth types, defined under `middleware/auth/` and configured in `middleware/auth/config.js`. Only one is active at a time — switch by commenting/uncommenting the relevant `app.use(...)` line near the bottom of `app.js`, then restart the server:
+7. This project ships with **five interchangeable authentication strategies** for practicing different auth types, defined under `middleware/auth/` and configured in `middleware/auth/config.js`. Only one is active at a time — switch by commenting/uncommenting the relevant `app.use(...)` line near the bottom of `app.js`, then restart the server:
     - **Basic Auth** (default) — `username = admin`, `password = admin`
     - **API Key** — header `x-api-key: demo-api-key-12345`
     - **Bearer Token (JWT)** — obtain a token via `POST /api/auth/login` with `{ "username": "admin", "password": "admin" }`
@@ -35,7 +83,7 @@ This is a Demo API built using express and nodejs. It stores data into a JSON Fi
     - **Digest Auth** — `username = admin`, `password = admin`, using the standard challenge/response flow (nonce issued on a 401)
 
     `POST /api/auth/login` and `POST /oauth/token` are always available regardless of which strategy is active.
-6. ### Testing the API with Playwright (TypeScript)
+8. ### Testing the API with Playwright (TypeScript)
     This API is well suited for practicing API testing with Playwright's `request` fixture, since every endpoint requires Basic Authentication. Here's a minimal example:
     ```ts
     test("Demo Api Login Test with user name and password as admin", async ({ request }) => {
@@ -52,7 +100,7 @@ This is a Demo API built using express and nodejs. It stores data into a JSON Fi
     });
     ```
     For a full walkthrough — setup, an auth helper, and CRUD + validation test scenarios for every endpoint (`GET`/`POST`/`PUT`/`DELETE` on `/api/members` and file upload on `/api/upload`) — see [docs/api-testing-with-playwright.md](docs/api-testing-with-playwright.md).
-7. ### Deploying to Railway
+9. ### Deploying to Railway
     The app reads `PORT` from the environment, so it runs on Railway without changes. `npm start` runs `node app.js` (production); `npm run dev` runs it under `nodemon` for local development.
 
     Persistence: `PFMembers.json` and uploaded files are written to disk under `DATA_DIR` (defaults to the repo root for local dev). Railway's filesystem is ephemeral, so to keep data across deploys/restarts, mount a **Volume** on the service and set `DATA_DIR` to its mount path (e.g. `/data`) as a Railway environment variable. The database file is seeded automatically from the repo's `database/PFMembers.json` the first time it's missing at `DATA_DIR`.

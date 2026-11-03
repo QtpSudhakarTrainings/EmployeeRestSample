@@ -11,8 +11,24 @@ This is a Demo API built using express and nodejs. It stores data into a JSON Fi
 2. ### File Upload - http://localhost:5002/api/upload
     * POST (/) - You can POST a new FILE into fileuploads folder.
 3. ### Swagger / API Documentation
-    * Open http://localhost:5002/api-docs for the interactive Swagger UI
-    * Open http://localhost:5002/api-docs.json for the raw OpenAPI JSON
+    The API includes comprehensive OpenAPI 3.0 documentation that can be viewed in multiple ways:
+    
+    **Interactive Swagger UI (Recommended for exploration):**
+    1. Start the server with `npm start`
+    2. Open your browser and navigate to: **http://localhost:5002/api-docs**
+    3. You'll see an interactive Swagger UI with:
+       - All available endpoints (GET, POST, PUT, DELETE)
+       - Request/response schemas
+       - Try-it-out button to test endpoints directly from the browser
+       - Authentication scheme selector
+    
+    **Raw OpenAPI JSON (For API automation tools):**
+    * View the raw OpenAPI specification at: **http://localhost:5002/api-docs.json**
+    * This JSON can be imported into Postman, Insomnia, or other API clients
+    
+    **Documentation Files:**
+    * [docs/openapi.yaml](docs/openapi.yaml) - OpenAPI 3.0 specification file (YAML format)
+    * [docs/API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md) - Detailed markdown documentation with authentication guides and examples
 4. ### Manually Verifying the REST API
     The easiest way to verify the API is working is to test the authentication endpoint using any HTTP client.
     
